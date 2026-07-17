@@ -8,7 +8,3 @@ import Playgrounds
         }
     }
 }
-
-#Playground {
-    _ = 1 + 2
-}
