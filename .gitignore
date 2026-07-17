@@ -1,0 +1,18 @@
+# Xcode
+#
+# Build results
+build/
+DerivedData/
+
+# Playgrounds
+.swiftpm/xcode/
+
+# Personal settings
+xcuserdata/
+
+# Architecture-specific files
+*.moved-aside
+*.xcuserstate
+
+# OS files
+.DS_Store
