@@ -2,21 +2,25 @@ import SwiftUI
 
 struct ProfileView: View {
     @Environment(\.dismiss) private var dismiss
+    @AppStorage("selectedTheme") private var selectedTheme: String = Theme.green.rawValue
+    
+    private var currentTheme: Theme {
+        Theme(rawValue: selectedTheme) ?? .green
+    }
     
     var body: some View {
-        NavigationStack {
-            ZStack {
-                // Opal-style ambient green gradient background
-                RadialGradient(
-                    colors: [Color(red: 12/255, green: 38/255, blue: 25/255), .black],
-                    center: .top,
-                    startRadius: 0,
-                    endRadius: 600
-                )
-                .ignoresSafeArea()
-                
-                VStack(spacing: 24) {
-                    // Profile Image / Hexagon shape
+        ZStack {
+            RadialGradient(
+                colors: currentTheme.gradientColors,
+                center: .top,
+                startRadius: 0,
+                endRadius: 600
+            )
+            .ignoresSafeArea()
+            
+            VStack(spacing: 24) {
+                // Profile Header (outside list)
+                VStack(spacing: 16) {
                     ZStack {
                         Circle()
                             .fill(Color.white.opacity(0.05))
@@ -27,79 +31,59 @@ struct ProfileView: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 50, height: 50)
-                            .foregroundColor(Color(red: 0.4, green: 0.9, blue: 0.7))
+                            .foregroundColor(currentTheme.accentColor)
                     }
                     .padding(.top, 40)
                     
-                    Text("Phosgenite0400")
+                    Text("Ansh Srivastava")
                         .font(.system(.title, design: .rounded))
                         .fontWeight(.bold)
                         .foregroundColor(.white)
-                    
-                    // Stats Grid
-                    HStack(spacing: 20) {
-                        StatView(value: "0", label: "FOCUS HOURS", image: "hourglass")
-                        StatView(value: "0", label: "DAY STREAK", image: "flame.fill")
-                        StatView(value: "39%", label: "GLOBAL RANK", image: "chart.bar.fill")
-                    }
-                    .padding(.vertical)
-                    
-                    Spacer()
-                }
-                .padding()
-            }
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button(action: {
-                        dismiss()
-                    }) {
-                        Image(systemName: "xmark")
-                            .foregroundColor(.white)
-                            .padding(8)
-                            .background(Color.white.opacity(0.1))
-                            .clipShape(Circle())
-                    }
                 }
                 
-                ToolbarItem(placement: .confirmationAction) {
-                    Button(action: {
-                        // Action for settings
-                    }) {
-                        Image(systemName: "gearshape.fill")
-                            .foregroundColor(.white)
-                            .padding(8)
-                            .background(Color.white.opacity(0.1))
-                            .clipShape(Circle())
+                // Theme Navigation Row (inside List)
+                List {
+                    NavigationLink(destination: ThemeSelectorView()) {
+                        HStack {
+                            Image(systemName: "paintpalette.fill")
+                                .foregroundColor(currentTheme.accentColor)
+                                .font(.body)
+                            
+                            Text("Theme")
+                                .font(.system(.body, design: .rounded))
+                                .foregroundColor(.white)
+                            
+                            Spacer()
+                            
+                            Text(currentTheme.rawValue)
+                                .font(.system(.subheadline, design: .rounded))
+                                .foregroundColor(.white.opacity(0.5))
+                        }
                     }
+                    .listRowBackground(Color.white.opacity(0.05))
+                    .listRowSeparator(.hidden)
+                }
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+                .scrollDisabled(true)
+                .frame(height: 50)
+                .cornerRadius(12)
+                .padding(.horizontal)
+                
+                Spacer()
+            }
+        }
+        .toolbar {
+            ToolbarItem(placement: .confirmationAction) {
+                Button(action: {
+                    // Action for settings
+                }) {
+                    Image(systemName: "gearshape.fill")
+                        .foregroundColor(.white)
                 }
             }
         }
-    }
-}
-
-struct StatView: View {
-    let value: String
-    let label: String
-    let image: String
-    
-    var body: some View {
-        VStack(spacing: 8) {
-            Image(systemName: image)
-                .font(.title2)
-                .foregroundColor(.white.opacity(0.8))
-                .frame(height: 30)
-            
-            Text(value)
-                .font(.system(.title3, design: .rounded))
-                .fontWeight(.bold)
-                .foregroundColor(.white)
-            
-            Text(label)
-                .font(.system(.caption2, design: .rounded))
-                .fontWeight(.semibold)
-                .foregroundColor(.white.opacity(0.5))
-        }
-        .frame(maxWidth: .infinity)
+        .toolbar(.hidden, for: .tabBar)
     }
 }
 
